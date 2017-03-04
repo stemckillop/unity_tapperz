@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GameManager : MonoBehaviour
@@ -16,6 +17,9 @@ public class GameManager : MonoBehaviour
     Vector2 prevBtn;
 
     int Score = 0;
+
+    public Text lbl_score;
+    public Text lbl_time;
 
     public int TilesEnabled
     {
@@ -43,6 +47,23 @@ public class GameManager : MonoBehaviour
     public bool GameOver = false;
     public float gameoverTimer = 3;
 
+    public bool demo = true;
+    public float demoTimer = 1f;
+    public float demoChange = 10f;
+    public enum DemoStyle
+    {
+        Random,
+        FillUp,
+        FillDown,
+        FillLeft,
+        FillRight,
+        SwipeUp,
+        SwipeDowm,
+        SwipeLeft,
+        SwipeRight
+    }
+    public DemoStyle demoStyle = DemoStyle.Random;
+
     // Use this for initialization
     void Start()
     {
@@ -54,7 +75,24 @@ public class GameManager : MonoBehaviour
     {
         RandomSpawn(4);
 
-        if (Countdown)
+        if (demo)
+        {
+            demoTimer -= Time.deltaTime;
+            demoChange -= Time.deltaTime;
+            if (demoTimer < 0)
+            {
+                Clear();
+                RandomSpawn(3);
+                demoTimer = 1f;
+            }
+            if (demoChange < 0)
+            {
+                demoChange = 10f;
+            }
+            lbl_score.text = "";
+            lbl_time.text = "";
+        }
+        else if (Countdown)
         {
             countTimer -= Time.deltaTime;
             DrawNum((int)Mathf.Ceil(countTimer));
@@ -68,6 +106,7 @@ public class GameManager : MonoBehaviour
         else if (GameActive)
         {
             gameTimer -= Time.deltaTime;
+            lbl_time.text = "Time: " + Mathf.Ceil(gameTimer).ToString();
             if (gameTimer < 0)
             {
                 GameActive = false;
@@ -118,16 +157,21 @@ public class GameManager : MonoBehaviour
 
     public void ButtonTouched(Button btn)
     {
-        prevBtn = btn.pos;
+        if (GameActive)
+        {
+            prevBtn = btn.pos;
 
-        if (btn.BtnState == Button.State.ACTIVE)
-        {
-            btn.BtnState = Button.State.DEFAULT;
-            Score++;
-        }
-        else if (btn.BtnState == Button.State.DEFAULT)
-        {
-            btn.BtnState = Button.State.WRONG;Score--;
+            if (btn.BtnState == Button.State.ACTIVE)
+            {
+                btn.BtnState = Button.State.DEFAULT;
+                Score++;
+                lbl_score.text = "Score: " + Score.ToString();
+            }
+            else if (btn.BtnState == Button.State.DEFAULT)
+            {
+                btn.BtnState = Button.State.WRONG; Score--;
+                lbl_score.text = "Score: " + Score.ToString();
+            }
         }
     }
 
