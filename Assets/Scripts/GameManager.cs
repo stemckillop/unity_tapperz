@@ -5,6 +5,14 @@ using System.Collections;
 public class GameManager : MonoBehaviour
 {
 
+    public enum GameType
+    {
+        Lightning,
+        TimeTrial,
+        Reaction
+    }
+    GameType type;
+
     public enum Tiles
     {
         DISABLED = 0,
@@ -69,6 +77,19 @@ public class GameManager : MonoBehaviour
     {
 
     }
+
+    public void StartGame(GameType type)
+    {
+        demo = false;
+        Countdown = true;
+        this.type = type;
+        if (type == GameType.Lightning)
+        {
+            Score = 0;
+        }
+        gameTimer = 15;
+    }
+
 
     // Update is called once per frame
     void Update()
